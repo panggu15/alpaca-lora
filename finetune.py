@@ -57,6 +57,8 @@ def train(
     wandb_log_model: str = "",  # options: false | true
     resume_from_checkpoint: str = None,  # either training checkpoint or final adapter
     prompt_template_name: str = "alpaca",  # The prompt template to use, will default to alpaca.
+    train_idx = 3000,
+    test_idx = 2000
 ):
     if int(os.environ.get("LOCAL_RANK", 0)) == 0:
         print(
@@ -182,15 +184,15 @@ def train(
         with open(data_path, 'r') as f:
             json_data = json.load(f)
 
-        train = pd.DataFrame(json_data[:5000])
-        test = pd.DataFrame(json_data[5000:10000])
+        train = pd.DataFrame(json_data[:train_idx])
+        test = pd.DataFrame(json_data[train_idx:train_idx+test_idx])
         train = Dataset.from_pandas(train)
         test = Dataset.from_pandas(test)
         data = DatasetDict({"train": train, "test": test})
 #         data = load_dataset("json", data_files=data_path)
     else:
         data = load_dataset(data_path)
-    print('success----------33333333333')
+    
     if resume_from_checkpoint:
         # Check the available weights and load them
         checkpoint_name = os.path.join(
@@ -231,7 +233,7 @@ def train(
         # keeps Trainer from trying its own DataParallelism when more than 1 gpu is available
         model.is_parallelizable = True
         model.model_parallel = True
-    print(use_wandb)
+    
     trainer = transformers.Trainer(
         model=model,
         train_dataset=train_data,
