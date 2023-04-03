@@ -5,7 +5,9 @@ from typing import List
 import fire
 import torch
 import transformers
-from datasets import load_dataset
+from datasets import load_dataset, Dataset, DatasetDict
+import json
+import pandas as pd
 
 """
 Unused imports:
@@ -177,8 +179,15 @@ def train(
     model = get_peft_model(model, config)
     
     if data_path.endswith(".json") or data_path.endswith(".jsonl"):
-        print('success----------2222222')
-        data = load_dataset("json", data_files=data_path)
+        with open(data_path, 'r') as f:
+            json_data = json.load(f)
+
+        train = pd.DataFrame(json_data[:2000])
+        test = pd.DataFrame(json_data[2000:4000])
+        train = Dataset.from_pandas(train)
+        test = Dataset.from_pandas(test)
+        data = DatasetDict({"train": train, "test": test})
+#         data = load_dataset("json", data_files=data_path)
     else:
         data = load_dataset(data_path)
     print('success----------33333333333')
