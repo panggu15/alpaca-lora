@@ -163,7 +163,7 @@ def train(
                 user_prompt_len:
             ]  # could be sped up, probably
         return tokenized_full_prompt
-    print('success----------')
+    
     model = prepare_model_for_int8_training(model)
 
     config = LoraConfig(
@@ -175,8 +175,9 @@ def train(
         task_type="CAUSAL_LM",
     )
     model = get_peft_model(model, config)
-    print('success----------2222222')
+    
     if data_path.endswith(".json") or data_path.endswith(".jsonl"):
+        print('success----------2222222')
         data = load_dataset("json", data_files=data_path)
     else:
         data = load_dataset(data_path)
