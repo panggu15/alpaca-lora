@@ -182,8 +182,8 @@ def train(
         with open(data_path, 'r') as f:
             json_data = json.load(f)
 
-        train = pd.DataFrame(json_data[:2000])
-        test = pd.DataFrame(json_data[2000:4000])
+        train = pd.DataFrame(json_data[:5000])
+        test = pd.DataFrame(json_data[5000:10000])
         train = Dataset.from_pandas(train)
         test = Dataset.from_pandas(test)
         data = DatasetDict({"train": train, "test": test})
